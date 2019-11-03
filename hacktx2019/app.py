@@ -1,22 +1,34 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, render_template
 from ocr import recognize_printed_text
 from util import allowed_file
 from werkzeug.utils import secure_filename
 import re
+from user import User
 
 WORDS_TO_IGNORE = ['minutes', 'seconds', 'hours', 'degrees', 'f', 'c', 'inches', 'feet', 'centimeters', 'millimeters', 'to']
 regex = re.compile('[\s,.\?!]')
 
+
 app = Flask(__name__)
 
+user = User()
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    if not user.is_authenticated:
+        if request.method == 'POST':
+            form_result = request.form
+            username, password = form_result["Username"], form_result["Password"]
+            authenticated = user.authenticate(username, password)
+            if authenticated:
+                return "Succesful Login"
+            return "Bad Login"
+    return "Already Authenticated"
 @app.route('/login')
 def login():
-
-	import pymongo
-	client = pymongo.MongoClient("mongodb+srv://hacktx-user:hacktx-user@hacktx-mb5vn.azure.mongodb.net/test?retryWrites=true&w=majority")
-	print(client.list_database_names())
-
-	return "Hello Login!"
+    if not user.is_authenticated:
+        return render_template("login.html")
+    return "Already Authenticated"
 
 @app.route('/rec', methods=['POST'])
 def rec():
