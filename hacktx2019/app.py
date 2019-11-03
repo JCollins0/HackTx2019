@@ -1,15 +1,26 @@
-from flask import Flask
+from flask import Flask, render_template,request
+from user import User
+
 app = Flask(__name__)
 
+user = User()
 
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    if not user.is_authenticated:
+        if request.method == 'POST':
+            form_result = request.form
+            username, password = form_result["Username"], form_result["Password"]
+            authenticated = user.authenticate(username, password)
+            if authenticated:
+                return "Succesful Login"
+            return "Bad Login"
+    return "Already Authenticated"
 @app.route('/login')
 def login():
-
-    import pymongo
-    client = pymongo.MongoClient("mongodb+srv://hacktx-user:hacktx-user@hacktx-mb5vn.azure.mongodb.net/test?retryWrites=true&w=majority")
-    print(client.list_database_names())
-
-    return "Hello Login!"
+    if not user.is_authenticated:
+        return render_template("login.html")
+    return "Already Authenticated"
 
 @app.route('/rec')
 def rec():
