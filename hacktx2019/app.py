@@ -1,4 +1,5 @@
 from flask import Flask
+import requests
 app = Flask(__name__)
 
 
@@ -17,6 +18,8 @@ def rec():
 
 @app.route('/find')
 def find():
+    response = requests.get("https://api.spoonacular.com/recipes/findByIngredients?ingredients=apples,%20flour,%20sugar&number=2&apiKey=954c30079df04c4fafe027b25a77ff5d")
+    print(response)
     return "Hello Find!"
 
 @app.route('/')
