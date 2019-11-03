@@ -2,3 +2,4 @@ flask
 pymongo
 dnspython
 requests
+flask-bootstrap
